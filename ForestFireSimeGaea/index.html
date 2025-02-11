@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wildfire Simulation</title>
+    <style>
+        body {
+            text-align: center;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        #container {
+            position: relative;
+            display: inline-block;
+            margin-top: 10px;
+        }
+        canvas {
+            display: block;
+            border: 2px solid black;
+            max-width: 100%;
+        }
+        #crosshair {
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            background-color: red;
+            border: 2px solid white;
+            border-radius: 50%;
+            pointer-events: none;
+            transform: translate(-50%, -50%);
+            visibility: visible;
+        }
+        #controls {
+            margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            background-color: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .slider-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            width: 300px;
+            justify-content: space-between;
+        }
+        label {
+            font-weight: bold;
+        }
+        input[type="range"] {
+            width: 200px;
+        }
+        button {
+            padding: 10px 15px;
+            font-size: 16px;
+            cursor: pointer;
+            margin: 5px;
+            border: none;
+            background-color: #ff5733;
+            color: white;
+            border-radius: 5px;
+            transition: background 0.3s;
+        }
+        button:hover {
+            background-color: #cc4626;
+        }
+    </style>
+</head>
+<body>
+    <h1>Wildfire Simulation</h1>
+
+    <div id="container">
+        <canvas id="fireCanvas"></canvas>
+        <div id="crosshair"></div>
+    </div>
+
+    <div id="controls">
+        <div class="slider-container">
+            <label for="windSpeed">Wind Speed:</label>
+            <input type="range" id="windSpeed" min="0" max="100" value="0">
+            <span id="windSpeedValue">0</span>
+        </div>
+
+        <div class="slider-container">
+            <label for="windDirection">Wind Direction (°):</label>
+            <input type="range" id="windDirection" min="0" max="360" value="0">
+            <span id="windDirectionValue">0°</span>
+        </div>
+
+        <div class="slider-container">
+            <label for="moistureLevel">Moisture Level:</label>
+            <input type="range" id="moistureLevel" min="0" max="100" value="50">
+            <span id="moistureLevelValue">50</span>
+        </div>
+
+        <button id="resetButton">Reset Simulation</button>
+    </div>
+
+    <script src="script.js"></script>
+
+    <script>
+        document.getElementById("windSpeed").addEventListener("input", function() {
+            document.getElementById("windSpeedValue").textContent = this.value;
+        });
+
+        document.getElementById("windDirection").addEventListener("input", function() {
+            document.getElementById("windDirectionValue").textContent = this.value + "°";
+        });
+
+        document.getElementById("moistureLevel").addEventListener("input", function() {
+            document.getElementById("moistureLevelValue").textContent = this.value;
+        });
+
+        document.addEventListener("mousemove", function (event) {
+            let crosshair = document.getElementById("crosshair");
+            let rect = document.getElementById("fireCanvas").getBoundingClientRect();
+            crosshair.style.left = `${event.clientX - rect.left}px`;
+            crosshair.style.top = `${event.clientY - rect.top}px`;
+        });
+
+        document.getElementById("resetButton").addEventListener("click", function () {
+            let fireCanvas = document.getElementById("fireCanvas");
+            let ctx = fireCanvas.getContext("2d");
+
+            if (typeof stopFireSimulation === "function") {
+                stopFireSimulation();
+            }
+
+            ctx.clearRect(0, 0, fireCanvas.width, fireCanvas.height);
+            ctx.drawImage(terrainImg, 0, 0, fireCanvas.width, fireCanvas.height);
+        });
+    </script>
+</body>
+</html>
